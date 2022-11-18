@@ -1,4 +1,4 @@
-from rush_hour import Car, RushHour
+from rush_hour import RushHour
 
 if __name__ == '__main__':
 	rh = RushHour(".BBCCC..EEKLAAIJKLH.IJFFHGGG.M.....M K6 M0")
