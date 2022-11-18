@@ -33,6 +33,14 @@ class RushHour:
 			print("GAME WON!")
 		return True
 	
+	def checkWin(self):
+		win = False
+		for car in self.cars.values():
+			if car.checkWin():
+				win = True
+		return win
+
+	
 	def getFormattedBoard(self):
 		out = ["."] * 36
 		for symbol in self.cars:
