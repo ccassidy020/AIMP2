@@ -3,9 +3,9 @@ from car import Car
 from typing import Dict, List, Tuple
 
 class RushHour:
-	moves: List[Tuple[str,str,int]] = []
-	cars: Dict[str, Car] = {}
 	def __init__(self, startState: str):
+		self.moves: List[Tuple[str,str,int]] = []
+		self.cars: Dict[str, Car] = {}
 		[map, *fuel] = startState.split(" ")
 		for (i, c) in enumerate(map):
 			x = i % 6

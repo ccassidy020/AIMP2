@@ -8,17 +8,14 @@ dirMap = {
 }
 
 class Car:
-	isAmbulance: bool = False
-	position: Tuple[int, int]
-	_savePos: Tuple[int, int] = None
-	fuel: int = 100
-	length: int = 1
-	direction: str
-	symbol: str
 	def __init__(self, symbol: str, position: Tuple[int]):
 		self.symbol = symbol
 		self.isAmbulance = symbol == "A"
 		self.position = position
+		self.fuel = 100
+		self.length = 1
+		self._savePos: Tuple[int, int] = None
+
 
 	def addPosition(self, position: Tuple[int, int]):
 		if (self.position[0] == position[0]):
