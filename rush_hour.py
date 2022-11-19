@@ -1,8 +1,9 @@
 import math
 from car import Car
-from typing import Dict
+from typing import Dict, List, Tuple
 
 class RushHour:
+	moves: List[Tuple[str,str,int]] = []
 	cars: Dict[str, Car] = {}
 	def __init__(self, startState: str):
 		[map, *fuel] = startState.split(" ")
@@ -26,12 +27,14 @@ class RushHour:
 				if self.cars[car].checkWin():
 					won = True
 			else:
-				print(car, direction, amt)
+				return 0
 
-		self.debugPrint(self.cars[car], direction, amt)
+		self.moves.append((car, direction, amt))
+		# self.debugPrint(self.cars[car], direction, amt)
 		if won:
-			print("GAME WON!")
-		return True
+			return 2
+			# print("GAME WON!")
+		return 1
 	
 	def checkWin(self):
 		win = False
@@ -54,8 +57,8 @@ class RushHour:
 
 		return "".join(out)
 	
-	def debugPrint(self, car: Car, dir: str, amt: int):
-		print("{:>1} {:>5} {:>1} {:>8} {:>36}".format(car.symbol, dir, amt, car.fuel, self.getFormattedBoard()))
+	def debugString(self, car: Car, dir: str, amt: int):
+		return "{:>1} {:>5} {:>1} {:>8} {:>36}".format(car.symbol, dir, amt, car.fuel, self.getFormattedBoard())
 
 def indexFromPos(x,y):
 	return (y * 6) + x

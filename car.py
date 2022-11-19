@@ -8,7 +8,7 @@ dirMap = {
 }
 
 class Car:
-	isAmbulance: False
+	isAmbulance: bool = False
 	position: Tuple[int, int]
 	_savePos: Tuple[int, int] = None
 	fuel: int = 100
