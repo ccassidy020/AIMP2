@@ -23,7 +23,7 @@ class Solver:
 		t_init = time()
 		game_state, num_search = self.solve()
 		t_end = time()
-		self.out += "Runtime: " + str(t_end - t_init) + "\n"
+		self.out += "Runtime: " + str(t_end - t_init) + " seconds\n"
 		self.out += "Search path length: " + str(num_search) + " states\n"
 		self.out += "Solution path length: " + str(len(game_state.moves)) + " moves\n"
 		self.out += "Solution path: " + "; ".join(["{:} {:} {:}".format(car, direction, amt) for (car, direction, amt) in game_state.moves]) + "\n\n"
