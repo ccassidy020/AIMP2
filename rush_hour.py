@@ -2,8 +2,17 @@ import math
 from car import Car
 from typing import Dict, List, Tuple
 
+undoMap = {
+	"up": "down",
+	"down": "up",
+	"right": "left",
+	"left": "right"
+}
+
 class RushHour:
-	def __init__(self, startState: str):
+	def __init__(self, startState: str = None):
+		if startState is None:
+			return
 		self.moves: List[Tuple[str,str,int]] = []
 		self.cars: Dict[str, Car] = {}
 		[map, *fuel] = startState.split(" ")
@@ -13,12 +22,23 @@ class RushHour:
 
 			if c.isalpha():
 				if c not in self.cars:
-					self.cars[c] = Car(c, (x,y))
+					self.cars[c] = Car(c, [x,y])
 				else:
-					self.cars[c].addPosition((x,y))
+					self.cars[c].addPosition([x,y])
 		for car in fuel:
 			[symbol, amt] = list(car)
 			self.cars[symbol].fuel = int(amt)
+		self.carArr = [car.position for car in self.cars.values()]
+	
+	def fullCopy(self):
+		rh = RushHour()
+		rh.moves = self.moves.copy()
+		rh.cars = {}
+		for car in self.cars:
+			rh.cars[car] = self.cars[car].copy()
+
+		rh.carArr = [car.position for car in rh.cars.values()]
+		return rh
 	
 	def makeMove(self, car: str, direction: str, amt: int):
 		won = False
@@ -27,6 +47,7 @@ class RushHour:
 				if self.cars[car].checkWin():
 					won = True
 			else:
+				print(self.moves)
 				return 0
 
 		self.moves.append((car, direction, amt))
@@ -35,6 +56,14 @@ class RushHour:
 			return 2
 			# print("GAME WON!")
 		return 1
+	
+	def copy(self):
+		return [car.copy() for car in self.carArr]
+	
+
+	def undo(self):
+		car, direction, amt= self.moves.pop()
+		self.cars[car].forceMove(undoMap[direction], amt)
 	
 	def checkWin(self):
 		win = False

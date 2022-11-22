@@ -1,4 +1,6 @@
-from typing import Tuple
+from typing import List
+
+
 
 dirMap = {
 	"up": (0, -1),
@@ -15,15 +17,26 @@ class CarQuery:
 		self.h = h
 
 class Car:
-	def __init__(self, symbol: str, position: Tuple[int]):
+	def __init__(self, symbol: str, position: List[int]):
 		self.symbol = symbol
 		self.position = position
 		self.fuel = 100
 		self.length = 1
-		self._savePos: Tuple[int, int] = None
+		self._savePos: List[int] = None
+	
+	def copy(self):
+		c = Car(self.symbol, self.position.copy())
+		c.fuel = self.fuel
+		c.length = self.length
+		c.direction = self.direction
+		if self._savePos is None:
+			c._savePos = None
+		else:
+			c._savePos = self._savePos.copy()
+		return c
 
 
-	def addPosition(self, position: Tuple[int, int]):
+	def addPosition(self, position: List[int]):
 		if (self.position[0] == position[0]):
 			self.direction = "vert"
 		else:
@@ -53,13 +66,16 @@ class Car:
 		return self.position[1]
 
 	def save(self):
-		self._savePos = self.position
+		self._savePos = [None]*2
+		self._savePos[0] = self.position[0]
+		self._savePos[1] = self.position[1]
 	
 	def restore(self):
 		if (self._savePos is None):
 			print("Cannot restore from None!")
 			return
-		self.position = self._savePos
+		self.position[0] = self._savePos[0]
+		self.position[1] = self._savePos[1]
 		self._savePos = None
 	
 	def deleteSave(self):
@@ -116,7 +132,14 @@ class Car:
 		return (n, p)
 
 	def getValidMoves(self, cars):
+		if self.fuel == 0:
+			return []
 		n,p = self.computeDistance(cars)
+		if self.fuel < n:
+			n = self.fuel
+		if self.fuel < p:
+			p = self.fuel
+
 		return *[(self.symbol, "left" if self.direction == "hor" else "up", i + 1) for i in range(n)], *[(self.symbol, "right" if self.direction == "hor" else "down", i + 1) for i in range(p)]
 
 
@@ -130,6 +153,12 @@ class Car:
 		return False
 
 
+
+	def forceMove(self, direction, amt):
+		move = dirMap[direction]
+		self.position[0] = self.position[0] + (move[0] * amt)
+		self.position[1] = self.position[1] + (move[1] * amt)
+		self.fuel += amt
 
 	def move(self, direction, cars) -> bool:
 		if (self.fuel == 0):
@@ -146,7 +175,8 @@ class Car:
 		
 		self.save()
 		move = dirMap[direction]
-		self.position = (self.position[0] + move[0], self.position[1] + move[1])
+		self.position[0] = self.position[0] + move[0]
+		self.position[1] = self.position[1] + move[1]
 		if not self.isPositionValid(cars):
 			# raise Exception("Move is invalid!")
 			print("Move is invalid!")

@@ -41,6 +41,7 @@ def test_sample():
 	test_distances(rh, True)
 	# print(rh.cars["E"].getValidMoves(rh.cars.values()))
 	print(rh.getAllValidMoves())
+	print(rh.carArr)
 	rh.makeMove("B", "left", 1)
 	rh.makeMove("E", "left", 2)
 	rh.makeMove("I", "up", 2)
@@ -55,6 +56,7 @@ def test_sample():
 	rh.makeMove("C", "left", 1)
 	rh.makeMove("L", "up", 1)
 	rh.makeMove("A", "right", 1)
+	print(rh.carArr)
 	test_distances(rh, False)
 	# for car in rh.cars:
 	# 	print('"' + car + '": ' + str(rh.cars[car].computeDistance(rh.cars.values())) + ",")
@@ -120,6 +122,7 @@ GGGJKM
 ...J.M"""
 	s = TestSolver(".BBCCC..EEKLAAIJKLH.IJFFHGGG.M.....M K6 M0")
 	print(s.out)
+	print(s.game.checkWin())
 	# assert out == s.out
 
 test_sample()
