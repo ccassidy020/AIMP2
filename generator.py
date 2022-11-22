@@ -39,8 +39,10 @@ class Generator:
 			average_time = total_time / (i + 1)
 			estimated_time_remaining = average_time * (self.num - i - 1)
 			minutes = math.floor(estimated_time_remaining / 60)
+			hours = math.floor(minutes / 60)
+			minutes = round(((minutes / 60) - hours) * 60)
 			seconds = round(((estimated_time_remaining / 60) - minutes) * 60)
-			print("Remaining: {:} (Estimated time: {:}:{:})".format(self.num - i - 1, minutes, '%02d' % seconds), end='\r')
+			print("Remaining: {:} (Estimated time: {:}:{:}:{:})".format(self.num - i - 1, '%02d' % hours, '%02d' % minutes, '%02d' % seconds), end='\r')
 		print()
 		return boards
 	
@@ -78,9 +80,9 @@ class Generator:
 			rh.carArr = [car.position for car in rh.cars.values()]
 			board = rh.getFormattedBoard()
 			algo = UCSSearch(board, 10000, True)
-			solvable = algo.solution_found and algo.search_path_length > 500
+			solvable = algo.solution_found and algo.search_path_length < 100
 		return board
 		
 
 
-open("./generated-input3.txt", "w").write("\n".join(Generator(50).generate()))
+open("./generated-input4.txt", "w").write("\n".join(Generator(50).generate()))
