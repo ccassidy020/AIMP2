@@ -25,7 +25,6 @@ class UCSSearch(Solver):
 
 if __name__ == '__main__':
 	cases = [x.strip() for x in open("./sample-input.txt", "r").readlines() if x[0] != '#' and x[0] != '\n']
-	# s = UCSSearch(".BBCCC..EEKLAAIJKLH.IJFFHGGG.M.....M K6 M0")
 	for i, case in enumerate(cases):
 		s = UCSSearch(case)
 		open("./output/ucs-sol-" + str(i + 1) + ".txt", "w").write(s.out)
