@@ -1,6 +1,4 @@
-from typing import List
-
-
+from typing import List, Tuple
 
 dirMap = {
 	"up": (0, -1),
@@ -35,8 +33,8 @@ class Car:
 			c._savePos = self._savePos.copy()
 		return c
 
-
 	def addPosition(self, position: List[int]):
+		# TODO: refactor self.direction into a boolean: self.is_horizontal
 		if (self.position[0] == position[0]):
 			self.direction = "vert"
 		else:
@@ -72,15 +70,13 @@ class Car:
 	
 	def restore(self):
 		if (self._savePos is None):
-			print("Cannot restore from None!")
-			return
+			raise Exception("Restore was called before save!")
 		self.position[0] = self._savePos[0]
 		self.position[1] = self._savePos[1]
 		self._savePos = None
 	
 	def deleteSave(self):
 		self._savePos = None
-
 
 	def isPositionValid(self, cars) -> bool:
 		if (self.x < 0 or self.y < 0 or self.x + self.w > 5 or self.y + self.h > 5):
@@ -91,15 +87,14 @@ class Car:
 			if (self.checkCollision(car)):
 				return False
 		return True
-
 	
 	def checkCollision(self, other) -> bool:
 		if (self.x <= other.x + other.w and self.x + self.w >= other.x and self.y <= other.y + other.h and self.y + self.h >= other.y):
-			# print(self.symbol + " collides with " + other.symbol + "!")
 			return True
 		return False
 	
 	def filterCollided(self, cars):
+		# TODO: Get rid of CarQuery
 		if self.direction == "hor":
 			q1 = CarQuery(0, self.y, self.x, 0)
 			q2 = CarQuery(self.x, self.y, 5 - self.x, 0)
@@ -131,7 +126,7 @@ class Car:
 				p = min(p, c_p - (s_p + s_s + 1))
 		return (n, p)
 
-	def getValidMoves(self, cars):
+	def getValidMoves(self, cars) -> List[Tuple[str, str, int]]:
 		if self.fuel == 0:
 			return []
 		n,p = self.computeDistance(cars)
@@ -142,8 +137,6 @@ class Car:
 
 		return *[(self.symbol, "left" if self.direction == "hor" else "up", i + 1) for i in range(n)], *[(self.symbol, "right" if self.direction == "hor" else "down", i + 1) for i in range(p)]
 
-
-	
 	def __repr__(self):
 		return "<Pos: " + str(self.position) + ", Dir: " + self.direction + ", Dims: " + str((self.w, self.h)) + ", Fuel: " + str(self.fuel) + ">"
 
@@ -152,35 +145,26 @@ class Car:
 			return True
 		return False
 
-
-
 	def forceMove(self, direction, amt):
 		move = dirMap[direction]
 		self.position[0] = self.position[0] + (move[0] * amt)
 		self.position[1] = self.position[1] + (move[1] * amt)
 		self.fuel += amt
 
-	def move(self, direction, cars) -> bool:
+	def move(self, direction, cars):
 		if (self.fuel == 0):
-			print("Not enough fuel!")
-			return False
+			raise Exception('Car "{:}" tried to move but does not have fuel!'.format(self.symbol))
 
 		if (self.direction == "hor" and (direction == "up" or direction == "down")):
-			print("Car can only move horizontally!")
-			return False
+			raise Exception('Car "{:}" tried to move vertically!'.format(self.symbol))
 
 		if (self.direction == "vert" and (direction == "right" or direction == "left")):
-			print("Car can only move vertically!")
-			return False
+			raise Exception('Car "{:}" tried to move horizontally!'.format(self.symbol))
 		
 		self.save()
 		move = dirMap[direction]
 		self.position[0] = self.position[0] + move[0]
 		self.position[1] = self.position[1] + move[1]
 		if not self.isPositionValid(cars):
-			# raise Exception("Move is invalid!")
-			print("Move is invalid!")
-			self.restore()
-			return False
+			raise Exception('Car "{:}" tried to move to a position that either puts it out of bounds or colliding with another car!'.format(self.symbol))
 		self.fuel -= 1
-		return True

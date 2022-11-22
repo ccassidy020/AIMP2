@@ -41,26 +41,14 @@ class RushHour:
 		return rh
 	
 	def makeMove(self, car: str, direction: str, amt: int):
-		won = False
 		for _ in range(0, amt):
-			if self.cars[car].move(direction, self.cars.values()):
-				if self.cars[car].checkWin():
-					won = True
-			else:
-				print(self.moves)
-				return 0
+			self.cars[car].move(direction, self.cars.values())
 
 		self.moves.append((car, direction, amt))
-		# self.debugPrint(self.cars[car], direction, amt)
-		if won:
-			return 2
-			# print("GAME WON!")
-		return 1
 	
 	def copy(self):
 		return [car.copy() for car in self.carArr]
 	
-
 	def undo(self):
 		car, direction, amt= self.moves.pop()
 		self.cars[car].forceMove(undoMap[direction], amt)
@@ -72,15 +60,13 @@ class RushHour:
 				win = True
 		return win
 	
-	def getAllValidMoves(self):
+	def getAllValidMoves(self) -> List[Tuple[str, str, int]]:
 		out = []
 		for car in self.cars.values():
 			out += car.getValidMoves(self.cars.values())
 		return out
-
-
 	
-	def getFormattedBoard(self):
+	def getFormattedBoard(self) -> str:
 		out = ["."] * 36
 		for symbol in self.cars:
 			car = self.cars[symbol]
@@ -93,8 +79,8 @@ class RushHour:
 
 		return "".join(out)
 	
-	def debugString(self, car: Car, dir: str, amt: int):
+	def debugString(self, car: Car, dir: str, amt: int) -> str:
 		return "{:>1} {:>5} {:>1} {:>8} {:>36}".format(car.symbol, dir, amt, car.fuel, self.getFormattedBoard())
 
-def indexFromPos(x,y):
+def indexFromPos(x: int, y: int) -> int:
 	return (y * 6) + x
