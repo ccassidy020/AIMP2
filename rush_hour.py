@@ -42,6 +42,13 @@ class RushHour:
 			if car.checkWin():
 				win = True
 		return win
+	
+	def getAllValidMoves(self):
+		out = []
+		for car in self.cars.values():
+			out += car.getValidMoves(self.cars.values())
+		return out
+
 
 	
 	def getFormattedBoard(self):

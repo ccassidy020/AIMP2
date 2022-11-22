@@ -1,7 +1,46 @@
 from rush_hour import RushHour
 
+def test_distances(rh: RushHour, init: bool):
+	if init:
+		expected = {
+			"B": (1, 0),
+			"C": (0, 0),
+			"E": (2, 0),
+			"K": (0, 0),
+			"L": (0, 0),
+			"A": (0, 0),
+			"I": (0, 0),
+			"J": (0, 0),
+			"H": (0, 1),
+			"F": (0, 0),
+			"G": (0, 1),
+			"M": (0, 0)
+		}
+	else:
+		expected = {
+			"B": (0, 0),
+			"C": (0, 0),
+			"E": (0, 0),
+			"K": (0, 1),
+			"L": (0, 0),
+			"A": (1, 0),
+			"I": (0, 0),
+			"J": (0, 0),
+			"H": (0, 0),
+			"F": (1, 0),
+			"G": (0, 0),
+			"M": (1, 0)
+		}
+
+	for car in rh.cars:
+		assert rh.cars[car].computeDistance(rh.cars.values()) == expected[car]
+
+
 def test_sample():
 	rh = RushHour(".BBCCC..EEKLAAIJKLH.IJFFHGGG.M.....M K6 M0")
+	test_distances(rh, True)
+	# print(rh.cars["E"].getValidMoves(rh.cars.values()))
+	print(rh.getAllValidMoves())
 	rh.makeMove("B", "left", 1)
 	rh.makeMove("E", "left", 2)
 	rh.makeMove("I", "up", 2)
@@ -16,6 +55,9 @@ def test_sample():
 	rh.makeMove("C", "left", 1)
 	rh.makeMove("L", "up", 1)
 	rh.makeMove("A", "right", 1)
+	test_distances(rh, False)
+	# for car in rh.cars:
+	# 	print('"' + car + '": ' + str(rh.cars[car].computeDistance(rh.cars.values())) + ",")
 	assert rh.checkWin() == True and rh.getFormattedBoard() == "BBCCCLEEI..LH.I.AAH.FFK.GGGJKM...J.M"
 
 from solver import Solver
