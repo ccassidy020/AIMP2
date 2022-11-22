@@ -1,3 +1,5 @@
+import math
+
 from rush_hour import RushHour
 from time import time
 from typing import Tuple
@@ -40,7 +42,9 @@ class Solver:
 		self.search_path_length = num_search
 		self.solution_path_length = len(game_state.moves)
 
-		self.out += "Runtime: " + ("%.2f" % round(self.execution_time, 2)) + " seconds\n" # TODO: Fix if time < 0.01 then it rounds to 0.00
+		precision = max(2, abs(round(math.log10(self.execution_time))))
+
+		self.out += "Runtime: " + (("%." + str(precision) + "f") % round(self.execution_time, precision)) + " seconds\n"
 		self.out += "Search path length: " + str(self.search_path_length) + " states\n"
 		self.out += "Solution path length: " + str(self.solution_path_length) + " moves\n"
 		self.out += "Solution path: " + "; ".join(["{:} {:} {:}".format(car, direction, amt) for (car, direction, amt) in game_state.moves]) + "\n\n"

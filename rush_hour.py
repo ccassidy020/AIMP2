@@ -70,7 +70,7 @@ class RushHour:
 		out = ["."] * 36
 		for symbol in self.cars:
 			car = self.cars[symbol]
-			if car.direction == "hor":
+			if car.isHor:
 				for i in range(car.length):
 					out[indexFromPos(car.x + i, car.y)] = car.symbol
 			else:

@@ -7,15 +7,9 @@ dirMap = {
 	"left": (-1, 0)
 }
 
-class CarQuery:
-	def __init__(self, x, y, w, h):
-		self.x = x
-		self.y = y
-		self.w = w
-		self.h = h
-
 class Car:
 	def __init__(self, symbol: str, position: List[int]):
+		self.isHor = False
 		self.symbol = symbol
 		self.position = position
 		self.fuel = 100
@@ -26,7 +20,7 @@ class Car:
 		c = Car(self.symbol, self.position.copy())
 		c.fuel = self.fuel
 		c.length = self.length
-		c.direction = self.direction
+		c.isHor = self.isHor
 		if self._savePos is None:
 			c._savePos = None
 		else:
@@ -34,23 +28,20 @@ class Car:
 		return c
 
 	def addPosition(self, position: List[int]):
-		# TODO: refactor self.direction into a boolean: self.is_horizontal
-		if (self.position[0] == position[0]):
-			self.direction = "vert"
-		else:
-			self.direction = "hor"
+		if self.position[1] == position[1]:
+			self.isHor = True
 		self.length += 1
 
 	@property
 	def h(self):
-		if (self.direction == "hor"):
+		if self.isHor:
 			return 0
 		else:
 			return self.length - 1
 	
 	@property
 	def w(self):
-		if (self.direction == "hor"):
+		if self.isHor:
 			return self.length - 1
 		else:
 			return 0
@@ -69,7 +60,7 @@ class Car:
 		self._savePos[1] = self.position[1]
 	
 	def restore(self):
-		if (self._savePos is None):
+		if self._savePos is None:
 			raise Exception("Restore was called before save!")
 		self.position[0] = self._savePos[0]
 		self.position[1] = self._savePos[1]
@@ -79,33 +70,35 @@ class Car:
 		self._savePos = None
 
 	def isPositionValid(self, cars) -> bool:
-		if (self.x < 0 or self.y < 0 or self.x + self.w > 5 or self.y + self.h > 5):
+		if self.x < 0 or self.y < 0 or self.x + self.w > 5 or self.y + self.h > 5:
 			return False
 		for car in cars:
 			if car is self:
 				continue
-			if (self.checkCollision(car)):
+			if self.checkCollision(car):
 				return False
 		return True
 	
 	def checkCollision(self, other) -> bool:
-		if (self.x <= other.x + other.w and self.x + self.w >= other.x and self.y <= other.y + other.h and self.y + self.h >= other.y):
+		if self.x <= other.x + other.w and self.x + self.w >= other.x and self.y <= other.y + other.h and self.y + self.h >= other.y:
 			return True
 		return False
 	
-	def filterCollided(self, cars):
-		# TODO: Get rid of CarQuery
-		if self.direction == "hor":
-			q1 = CarQuery(0, self.y, self.x, 0)
-			q2 = CarQuery(self.x, self.y, 5 - self.x, 0)
-		elif self.direction == "vert":
-			q1 = CarQuery(self.x, 0, 0, self.y)
-			q2 = CarQuery(self.x, self.y, 0, 5 - self.y)
-		
-		return [car for car in cars if car is not self and (car.checkCollision(q1) or car.checkCollision(q2))]
+	def isInWay(self, car):
+		if car is self:
+			return False
+
+		if self.isHor:
+			if self.y >= car.y and self.y <= car.y + car.h:
+				return True
+		else: 
+			if self.x >= car.x and self.x <= car.x + car.w:
+				return True
+
+		return False
 	
 	def computeDistance(self, cars):
-		if self.direction == "hor":
+		if self.isHor:
 			s_p = self.x
 			s_s = self.w
 		else:
@@ -113,8 +106,12 @@ class Car:
 			s_s = self.h
 		n = s_p
 		p = 5 - (s_p + s_s)
-		for car in self.filterCollided(cars):
-			if self.direction == "hor":
+
+		for car in cars:
+			if not self.isInWay(car):
+				continue
+
+			if self.isHor:
 				c_p = car.x
 				c_s = car.w
 			else:
@@ -124,7 +121,7 @@ class Car:
 				n = min(n, s_p - (c_p + c_s + 1))
 			else:
 				p = min(p, c_p - (s_p + s_s + 1))
-		return (n, p)
+		return n, p
 
 	def getValidMoves(self, cars) -> List[Tuple[str, str, int]]:
 		if self.fuel == 0:
@@ -135,10 +132,12 @@ class Car:
 		if self.fuel < p:
 			p = self.fuel
 
-		return *[(self.symbol, "left" if self.direction == "hor" else "up", i + 1) for i in range(n)], *[(self.symbol, "right" if self.direction == "hor" else "down", i + 1) for i in range(p)]
+		n_dir, p_dir = "left" if self.isHor else "up", "right" if self.isHor else "down"
+
+		return *[(self.symbol, n_dir, i + 1) for i in range(n)], *[(self.symbol, p_dir, i + 1) for i in range(p)]
 
 	def __repr__(self):
-		return "<Pos: " + str(self.position) + ", Dir: " + self.direction + ", Dims: " + str((self.w, self.h)) + ", Fuel: " + str(self.fuel) + ">"
+		return "<Pos: " + str(self.position) + ", Dir: " + "hor" if self.isHor else "vert" + ", Dims: " + str((self.w, self.h)) + ", Fuel: " + str(self.fuel) + ">"
 
 	def checkWin(self):
 		if self.symbol == "A" and self.y == 2 and self.x == 5 - (self.length  - 1):
@@ -152,13 +151,13 @@ class Car:
 		self.fuel += amt
 
 	def move(self, direction, cars):
-		if (self.fuel == 0):
+		if self.fuel == 0:
 			raise Exception('Car "{:}" tried to move but does not have fuel!'.format(self.symbol))
 
-		if (self.direction == "hor" and (direction == "up" or direction == "down")):
+		if self.isHor and (direction == "up" or direction == "down"):
 			raise Exception('Car "{:}" tried to move vertically!'.format(self.symbol))
 
-		if (self.direction == "vert" and (direction == "right" or direction == "left")):
+		if not self.isHor and (direction == "right" or direction == "left"):
 			raise Exception('Car "{:}" tried to move horizontally!'.format(self.symbol))
 		
 		self.save()
