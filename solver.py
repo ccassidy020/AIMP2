@@ -21,7 +21,11 @@ class Solver:
 
 	def run(self):
 		t_init = time()
-		game_state, num_search = self.solve()
+		res = self.solve()
+		if res is None:
+			self.out = "no solution"
+			return
+		game_state, num_search = res
 		t_end = time()
 		self.out += "Runtime: " + str(t_end - t_init) + " seconds\n"
 		self.out += "Search path length: " + str(num_search) + " states\n"
@@ -52,6 +56,9 @@ class Solver:
             Returns:
 					game (RushHour): Final game state found by algorithm
 					search_path_length (int): The length of the search path of the algorithm
+				
+				OR
+					None if no solution is found
     	'''
 		pass
 
