@@ -5,13 +5,18 @@ from time import time
 from typing import Tuple
 
 class Solver:
-	def __init__(self, initalState: str):
+	def __init__(self, initalState: str, max_search: int = 1000000, ignore = False):
 		self.game: RushHour = RushHour(initalState)
 		self.initalState: str = initalState
 		self.out: str = ""
 		self.out_search: str = ""
 		self.solution_found = False
+		self.max = max_search
+		self.ignore = ignore
 
+		if ignore:
+			self.run()
+			return
 		self.out += "Initial board configuration: " + initalState + "\n\n"
 		for i in range(36):
 			if i % 6 == 0 and i != 0:
@@ -41,6 +46,9 @@ class Solver:
 		self.execution_time = t_end - t_init
 		self.search_path_length = num_search
 		self.solution_path_length = len(game_state.moves)
+		
+		if self.ignore:
+			return
 
 		precision = max(2, abs(round(math.log10(self.execution_time))))
 

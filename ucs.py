@@ -8,6 +8,8 @@ class UCSSearch(Solver):
 		visited = [self.game.copy()]
 
 		while len(queue) > 0:
+			if search_path_length > self.max:
+				return None
 			board = queue.pop(0)
 			search_path_length += 1
 			self.appendSearchString(board)
