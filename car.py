@@ -14,17 +14,12 @@ class Car:
 		self.position = position
 		self.fuel = 100
 		self.length = 1
-		self._savePos: List[int] = None
 	
 	def copy(self):
 		c = Car(self.symbol, self.position.copy())
 		c.fuel = self.fuel
 		c.length = self.length
 		c.isHor = self.isHor
-		if self._savePos is None:
-			c._savePos = None
-		else:
-			c._savePos = self._savePos.copy()
 		return c
 
 	def addPosition(self, position: List[int]):
@@ -34,17 +29,11 @@ class Car:
 
 	@property
 	def h(self):
-		if self.isHor:
-			return 0
-		else:
-			return self.length - 1
+		return 0 if self.isHor else self.length - 1
 	
 	@property
 	def w(self):
-		if self.isHor:
-			return self.length - 1
-		else:
-			return 0
+		return self.length - 1 if self.isHor else 0
 	
 	@property
 	def x(self):
@@ -53,21 +42,6 @@ class Car:
 	@property
 	def y(self):
 		return self.position[1]
-
-	def save(self):
-		self._savePos = [None]*2
-		self._savePos[0] = self.position[0]
-		self._savePos[1] = self.position[1]
-	
-	def restore(self):
-		if self._savePos is None:
-			raise Exception("Restore was called before save!")
-		self.position[0] = self._savePos[0]
-		self.position[1] = self._savePos[1]
-		self._savePos = None
-	
-	def deleteSave(self):
-		self._savePos = None
 
 	def isPositionValid(self, cars) -> bool:
 		if self.x < 0 or self.y < 0 or self.x + self.w > 5 or self.y + self.h > 5:
@@ -146,8 +120,8 @@ class Car:
 
 	def forceMove(self, direction, amt):
 		move = dirMap[direction]
-		self.position[0] = self.position[0] + (move[0] * amt)
-		self.position[1] = self.position[1] + (move[1] * amt)
+		self.position[0] += move[0] * amt
+		self.position[1] += move[1] * amt
 		self.fuel += amt
 
 	def move(self, direction, cars):
@@ -160,10 +134,9 @@ class Car:
 		if not self.isHor and (direction == "right" or direction == "left"):
 			raise Exception('Car "{:}" tried to move horizontally!'.format(self.symbol))
 		
-		self.save()
 		move = dirMap[direction]
-		self.position[0] = self.position[0] + move[0]
-		self.position[1] = self.position[1] + move[1]
+		self.position[0] += move[0]
+		self.position[1] += move[1]
 		if not self.isPositionValid(cars):
 			raise Exception('Car "{:}" tried to move to a position that either puts it out of bounds or colliding with another car!'.format(self.symbol))
 		self.fuel -= 1
