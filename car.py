@@ -117,6 +117,12 @@ class Car:
 		if self.symbol == "A" and self.y == 2 and self.x == 5 - (self.length  - 1):
 			return True
 		return False
+	
+	def checkToBeRemoved(self):
+		if self.symbol != "A" and self.isHor and self.y == 2:
+			if self.x + self.w == 6:
+				return True
+		return False
 
 	def forceMove(self, direction, amt):
 		move = dirMap[direction]
