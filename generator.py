@@ -80,7 +80,7 @@ class Generator:
 			rh.carArr = [car.position for car in rh.cars.values()]
 			board = rh.getFormattedBoard()
 			algo = UCSSearch(board, 10000, True)
-			solvable = algo.solution_found and algo.search_path_length < 100
+			solvable = algo.solution_found and algo.search_path_length > 100
 		return board
 		
 

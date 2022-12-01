@@ -13,7 +13,7 @@ from AH4 import ASolverH4
 
 
 if __name__ == '__main__':
-	cases = [x.strip() for x in open("./sample-input.txt", "r").readlines() if x[0] != '#' and x[0] != '\n']
+	cases = [x.strip() for x in open("./generated-input5.txt", "r").readlines() if x[0] != '#' and x[0] != '\n']
 	algorithms: Dict[str, Solver] = {
 		"ucs": UCSSearch,
 		"gbfs-h1": GBFSSolverH1,
