@@ -42,34 +42,46 @@ class RushHour:
 	
 	def makeMove(self, car: str, direction: str, amt: int):
 		for _ in range(0, amt):
-			self.cars[car].move(direction, self.cars.values())
+			self.cars[car].move(direction, self.getCars())
 
 		self.moves.append((car, direction, amt))
+		if self.cars[car].checkToBeRemoved():
+			self.cars[car].removed = True
 	
 	def copy(self):
 		return [car.copy() for car in self.carArr]
 	
+	def getCars(self):
+		return [self.cars[car] for car in self.cars if not self.cars[car].removed]
+	
 	def undo(self):
 		car, direction, amt= self.moves.pop()
-		self.cars[car].forceMove(undoMap[direction], amt)
+		target_car = self.cars[car]
+		if target_car.removed:
+			target_car.removed = False
+
+		target_car.forceMove(undoMap[direction], amt)
 	
 	def checkWin(self):
 		win = False
-		for car in self.cars.values():
+		for car in self.getCars():
 			if car.checkWin():
 				win = True
 		return win
 	
 	def getAllValidMoves(self) -> List[Tuple[str, str, int]]:
 		out = []
-		for car in self.cars.values():
-			out += car.getValidMoves(self.cars.values())
+		cars = self.getCars()
+		for car in cars:
+			out += car.getValidMoves(cars)
 		return out
 	
 	def getFormattedBoard(self) -> str:
 		out = ["."] * 36
 		for symbol in self.cars:
 			car = self.cars[symbol]
+			if car.removed:
+				continue
 			if car.isHor:
 				for i in range(car.length):
 					out[indexFromPos(car.x + i, car.y)] = car.symbol

@@ -14,12 +14,14 @@ class Car:
 		self.position = position
 		self.fuel = 100
 		self.length = 1
+		self.removed = self.checkToBeRemoved()
 	
 	def copy(self):
 		c = Car(self.symbol, self.position.copy())
 		c.fuel = self.fuel
 		c.length = self.length
 		c.isHor = self.isHor
+		c.removed = self.removed
 		return c
 
 	def addPosition(self, position: List[int]):
@@ -111,7 +113,7 @@ class Car:
 		return *[(self.symbol, n_dir, i + 1) for i in range(n)], *[(self.symbol, p_dir, i + 1) for i in range(p)]
 
 	def __repr__(self):
-		return "<Pos: " + str(self.position) + ", Dir: " + "hor" if self.isHor else "vert" + ", Dims: " + str((self.w, self.h)) + ", Fuel: " + str(self.fuel) + ">"
+		return self.symbol+ ": <Pos: " + str(self.position) + ", Dir: " + ("hor" if self.isHor else "vert") + ", Dims: " + str((self.w, self.h)) + ", Fuel: " + str(self.fuel) + ">"
 
 	def checkWin(self):
 		if self.symbol == "A" and self.y == 2 and self.x == 5 - (self.length  - 1):
@@ -120,7 +122,7 @@ class Car:
 	
 	def checkToBeRemoved(self):
 		if self.symbol != "A" and self.isHor and self.y == 2:
-			if self.x + self.w == 6:
+			if self.x + self.w == 5:
 				return True
 		return False
 
