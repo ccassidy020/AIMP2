@@ -2,7 +2,7 @@
 Make sure you have python 3.8+ installed  
 
 
-You are also going to need either Python Compiler or VSCode to run it.
+You are also going to need either a Python Compiler or VSCode to run it.
 
 Clone the repository using:
 ```bash
